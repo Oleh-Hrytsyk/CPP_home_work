@@ -55,6 +55,7 @@ void generateMaze(std::array<std::array<char, mazeColumns>, mazeRows> &prMaze)
     // Place character
     placeCharRandomly(prMaze, characterSymbol, 1);
     placeCharRandomly(prMaze, exitSymbol, 1);
+	placeCharRandomly(prMaze, keySymbol, 1);
 }
 
 // Moves character according to given command and retuns eaten symbol (if any)
