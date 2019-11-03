@@ -6,3 +6,5 @@
 ##### 1.4 With the "git add" command I added files.
 ##### 1.5 With the "git commit -m" I commited changes.
 ##### 1.6 With the "git push" command I pushed files to remote repository.
+##### Game screenchot☻
+![image alt](screenshots/1.png)
