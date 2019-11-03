@@ -3,6 +3,9 @@
 
 #include "game-defs.h"
 #include "game-map-utils.h"
+#include "random-utils.h"
+
+bool keyCheck = false;
 
 // Checks if user want so play
 // Return true if user wants to play; false otherwise
@@ -31,6 +34,7 @@ bool doesUserWantsToPlay()
     return rResult;
 }
 
+
 // Generates maze
 // Parameters:
 //       maze - reference to maze field that will be modified
@@ -41,16 +45,52 @@ void generateMaze(std::array<std::array<char, mazeColumns>, mazeRows> &prMaze)
     {
         for (int column = 0; column < mazeColumns; column++)
         {
-            if ((row == 0) || (row == mazeRows - 1) || (column == 0) || (column == mazeColumns - 1))
+            if ((row%2 == 0) || (column%2 == 0))
             {
                 prMaze[row][column] = wallSymbol;
             }
-            else
+            else 
             {
                 prMaze[row][column] = emptySymbol;
+				
             }
         }
     }
+
+	for (int row = 1; row < mazeRows; row+=2)
+	{
+		for (int column = 1; column < mazeColumns; column+=2)
+		{
+			int rand = generateRandomNumber(0, 2);
+				if (rand == 1) {
+					if(column + 1 != mazeColumns - 1)
+					prMaze[row][column + 1] = emptySymbol;
+				else if (row + 1 != mazeRows - 1 && column + 1 == mazeColumns - 1)
+					prMaze[row + 1][column] = emptySymbol;
+				}
+				
+				if (rand == 0)
+				{
+					if(row + 1 != mazeRows - 1)
+						prMaze[row + 1][column] = emptySymbol;
+					else if (row + 1 == mazeRows - 1 && column + 1 != mazeColumns -1)
+						prMaze[row][column + 1] = emptySymbol;
+				}
+
+				if (rand == 2 && row + 1 != mazeRows - 1 && column + 1 != mazeColumns - 1)
+				{	
+					prMaze[row + 1][column] = emptySymbol;
+					prMaze[row][column + 1] = emptySymbol;
+				}
+				else if (row + 1 == mazeRows - 1 && column + 1 != mazeColumns - 1)
+					prMaze[row][column + 1] = emptySymbol;
+				else if (row + 1 != mazeRows - 1 && column + 1 == mazeColumns - 1)
+					prMaze[row + 1][column] = emptySymbol;
+				
+		}
+	}
+
+
 
     // Place character
     placeCharRandomly(prMaze, characterSymbol, 1);
@@ -77,8 +117,7 @@ char moveAndGather(int row,
     if (command == 'l')
     {
         rCharMovedOnto = prMaze[row][column - 1];
-
-        if (rCharMovedOnto != wallSymbol)
+        if (rCharMovedOnto != wallSymbol && rCharMovedOnto != exitSymbol)
         {
             column--;
         }
@@ -88,7 +127,7 @@ char moveAndGather(int row,
     {
         rCharMovedOnto = prMaze[row][column + 1];
 
-        if (rCharMovedOnto != wallSymbol)
+        if (rCharMovedOnto != wallSymbol && rCharMovedOnto != exitSymbol)
         {
             column++;
         }
@@ -98,7 +137,7 @@ char moveAndGather(int row,
     {
         rCharMovedOnto = prMaze[row - 1][column];
 
-        if (rCharMovedOnto != wallSymbol)
+        if (rCharMovedOnto != wallSymbol && rCharMovedOnto != exitSymbol)
         {
             row--;
         }
@@ -108,7 +147,7 @@ char moveAndGather(int row,
     {
         rCharMovedOnto = prMaze[row + 1][column];
 
-        if (rCharMovedOnto != wallSymbol)
+        if (rCharMovedOnto != wallSymbol && rCharMovedOnto != exitSymbol)
         {
             row++;
         }
@@ -150,7 +189,17 @@ bool moveCharacterAndCheckIfExitFound(std::array<std::array<char, mazeColumns>, 
             gameMessage("Cannot move here!");
         }
 
-        if (charMovedOnto == exitSymbol)
+		if (charMovedOnto == keySymbol)
+		{
+			gameMessage("You found a key!");
+			keyCheck = true;
+		}
+		if (charMovedOnto == exitSymbol && keyCheck == false)
+		{
+			gameMessage("You need a key!");
+		}
+
+        if (charMovedOnto == exitSymbol && keyCheck == true)
         {
             gameMessage("Exit found!");
             rExitFound = true;

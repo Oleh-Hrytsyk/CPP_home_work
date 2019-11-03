@@ -1,8 +1,8 @@
-#ifndef GAME_DEFS_H
+﻿#ifndef GAME_DEFS_H
 #define GAME_DEFS_H
 
-const int mazeColumns = 20;
-const int mazeRows = 20;
+const int mazeColumns = 21;
+const int mazeRows = 21;
 
 const char emptySymbol = ' ';
 const char wallSymbol = 'X';
