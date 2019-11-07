@@ -12,7 +12,6 @@ bool keyCheck = false;
 bool doesUserWantsToPlay()
 {
     bool rResult = false;
-
     std::cout << "Maze Game" << std::endl;
 
     while (true)
@@ -93,9 +92,35 @@ void generateMaze(std::array<std::array<char, mazeColumns>, mazeRows> &prMaze)
 
 
     // Place character
+        do{
+          int col=generateRandomNumber(1, mazeColumns-2);
+          int rows=generateRandomNumber(1, mazeRows-2);
+          if((col%2==1) && (rows%2==1)){
+              if(prMaze[rows + 1][col] == wallSymbol && prMaze[rows - 1][col]== wallSymbol && prMaze[rows][col+1]== wallSymbol){
+                prMaze[rows][col] = exitSymbol;
+            break;
+          }
+          else if(prMaze[rows + 1][col] == wallSymbol && prMaze[rows - 1][col]== wallSymbol && prMaze[rows][col-1]== wallSymbol){
+              prMaze[rows][col] = exitSymbol;
+            break;
+        }
+        else if(prMaze[rows + 1][col] == wallSymbol && prMaze[col + 1][col]== wallSymbol && prMaze[rows][col-1]== wallSymbol){
+            prMaze[rows][col] = exitSymbol;
+            break;
+      }
+        else if(prMaze[rows - 1][col] == wallSymbol && prMaze[col + 1][col]== wallSymbol && prMaze[rows][col-1]== wallSymbol){
+             prMaze[rows][col] = exitSymbol;
+             break;
+          }
+             else{
+                continue;
+             }
+        }
+
+     }
+        while (true);
     placeCharRandomly(prMaze, characterSymbol, 1);
-    placeCharRandomly(prMaze, exitSymbol, 1);
-	placeCharRandomly(prMaze, keySymbol, 1);
+    placeCharRandomly(prMaze, keySymbol, 1);
 }
 
 // Moves character according to given command and retuns eaten symbol (if any)
