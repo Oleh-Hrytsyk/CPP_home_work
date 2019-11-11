@@ -7,6 +7,44 @@
 
 bool keyCheck = false;
 
+
+void checkDown(std::array<std::array<char, mazeColumns>, mazeRows> &prMaze, std::vector<std::array<int, 2>> &coordinates, int &x, int &y, std::array<int, 2> &current_coordinate, int way_map[mazeRows][mazeColumns]) {
+        prMaze[x + 1][y] = emptySymbol;
+        x += 2;
+        way_map[x][y] = 1;
+        current_coordinate[0]=x;
+        current_coordinate[1]=y;
+        coordinates.push_back(current_coordinate);
+}
+
+void checkRight(std::array<std::array<char, mazeColumns>, mazeRows> &prMaze, std::vector<std::array<int, 2>> &coordinates, int &x, int &y, std::array<int, 2> &current_coordinate, int way_map[mazeRows][mazeColumns]) {
+        prMaze[x][y + 1] = emptySymbol;
+        y += 2;
+        way_map[x][y] = 1;
+        current_coordinate[0] = x;
+        current_coordinate[1] = y;
+        coordinates.push_back(current_coordinate);
+}
+
+void checkUp(std::array<std::array<char, mazeColumns>, mazeRows> &prMaze, std::vector<std::array<int, 2>> &coordinates, int &x, int &y, std::array<int, 2> &current_coordinate, int way_map[mazeRows][mazeColumns]) {
+        prMaze[x - 1][y] = emptySymbol;
+        x -= 2;
+        way_map[x][y] = 1;
+        current_coordinate[0] = x;
+        current_coordinate[1] = y;
+        coordinates.push_back(current_coordinate);
+}
+
+void checkLeft(std::array<std::array<char, mazeColumns>, mazeRows> &prMaze, std::vector<std::array<int, 2>> &coordinates, int &x, int &y, std::array<int, 2> &current_coordinate, int way_map[mazeRows][mazeColumns]) {
+        prMaze[x][y - 1] = emptySymbol;
+        y -= 2;
+        way_map[x][y] = 1;
+        current_coordinate[0] = x;
+        current_coordinate[1] = y;
+        coordinates.push_back(current_coordinate);
+}
+
+
 // Checks if user want so play
 // Return true if user wants to play; false otherwise
 bool doesUserWantsToPlay()
@@ -40,75 +78,159 @@ bool doesUserWantsToPlay()
 //              (walls added, added character and exit)
 void generateMaze(std::array<std::array<char, mazeColumns>, mazeRows> &prMaze)
 {
-    for (int row = 0; row < mazeRows; row++)
-    {
-        for (int column = 0; column < mazeColumns; column++)
-        {
-            if ((row%2 == 0) || (column%2 == 0))
-            {
-                prMaze[row][column] = wallSymbol;
-            }
-            else 
-            {
-                prMaze[row][column] = emptySymbol;
-				
-            }
-        }
-    }
+    int x = 1;
+            int y = 1;
+            bool moveForvard = true;
+            bool moveBack = false;
+            int way_map[mazeRows][mazeColumns];
 
-	for (int row = 1; row < mazeRows; row+=2)
-	{
-		for (int column = 1; column < mazeColumns; column+=2)
-		{
-			int rand = generateRandomNumber(0, 2);
-				if (rand == 1) {
-					if(column + 1 != mazeColumns - 1)
-					prMaze[row][column + 1] = emptySymbol;
-				else if (row + 1 != mazeRows - 1 && column + 1 == mazeColumns - 1)
-					prMaze[row + 1][column] = emptySymbol;
-				}
-				
-				if (rand == 0)
-				{
-					if(row + 1 != mazeRows - 1)
-						prMaze[row + 1][column] = emptySymbol;
-					else if (row + 1 == mazeRows - 1 && column + 1 != mazeColumns -1)
-						prMaze[row][column + 1] = emptySymbol;
-				}
+            //std::array<std::array<int, mazeRows>, mazeColumns> way_map;
 
-				if (rand == 2 && row + 1 != mazeRows - 1 && column + 1 != mazeColumns - 1)
-				{	
-					prMaze[row + 1][column] = emptySymbol;
-					prMaze[row][column + 1] = emptySymbol;
-				}
-				else if (row + 1 == mazeRows - 1 && column + 1 != mazeColumns - 1)
-					prMaze[row][column + 1] = emptySymbol;
-				else if (row + 1 != mazeRows - 1 && column + 1 == mazeColumns - 1)
-					prMaze[row + 1][column] = emptySymbol;
-				
-		}
-	}
+
+            std::vector<std::array<int, 2>> coordinates;
+            std::array<int, 2> current_coordinate;
+            current_coordinate[0] = x;
+            current_coordinate[1] = y;
+            coordinates.push_back(current_coordinate);
+
+
+            for (int row = 0; row < mazeRows; row++)
+            {
+                    for (int column = 0; column < mazeColumns; column++)
+                    {
+                            if ((row % 2 == 0) || (column % 2 == 0))
+                            {
+                                    prMaze[row][column] = wallSymbol;
+                                    way_map[row][column] = -1;
+                            }
+                            else
+                            {
+                                    prMaze[row][column] = emptySymbol;
+                                    way_map[row][column] = 0;
+                            }
+                    }
+            }
+
+            way_map[x][y] = 1;
+
+            while (coordinates.size() != 0) {
+
+                    if (moveForvard) {
+                            int random_way = generateRandomNumber(1, 4);
+                            if (random_way == 1) {
+                                    if (way_map[x + 2][y] == 0 && (x + 2) < mazeColumns) {
+                                            checkDown(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x][y + 2] == 0 && (y + 2) < mazeRows) {
+                                            checkRight(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x][y - 2] == 0 && (y - 2) > 0) {
+                                            checkLeft(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x - 2][y] == 0 && (x - 2) > 0) {
+                                            checkUp(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else {
+                                            moveForvard = false;
+                                    }
+                            }
+                            else if (random_way == 2) {
+                                    if (way_map[x][y + 2] == 0 && (y + 2) < mazeRows) {
+                                            checkRight(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x][y - 2] == 0 && (y - 2) > 0) {
+                                            checkLeft(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x - 2][y] == 0 && (x - 2) > 0) {
+                                            checkUp(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x + 2][y] == 0 && (x + 2) < mazeColumns) {
+                                            checkDown(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else moveForvard = false;
+                            }
+                            else if (random_way == 3) {
+                                    if (way_map[x][y - 2] == 0 && (y - 2) > 0) {
+                                            checkLeft(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x - 2][y] == 0 && (x - 2) > 0) {
+                                            checkUp(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x + 2][y] == 0 && (x + 2) < mazeColumns) {
+                                            checkDown(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x][y + 2] == 0 && (y + 2) < mazeRows) {
+                                            checkRight(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else moveForvard = false;
+                            }
+                            else if (random_way == 4) {
+                                    if (way_map[x - 2][y] == 0 && (x - 2) > 0) {
+                                            checkUp(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x + 2][y] == 0 && (x + 2) < mazeColumns) {
+                                            checkDown(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x][y + 2] == 0 && (y + 2) < mazeRows) {
+                                            checkRight(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x][y - 2] == 0 && (y - 2) > 0) {
+                                            checkLeft(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else {
+                                            moveForvard = false;
+
+                                    }
+                            }
+                    }
+                    else if(moveForvard == false){
+                            coordinates.pop_back();
+                            if (coordinates.size() > 0) {
+                                    current_coordinate = coordinates.back();
+                                    x = current_coordinate[0];
+                                    y = current_coordinate[1];
+                                    if (way_map[x][y + 2] == 0 && (y + 2) < mazeRows) {
+                                            moveForvard = true;
+                                            checkRight(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x][y - 2] == 0 && (y - 2) > 0) {
+                                            moveForvard = true;
+                                            checkLeft(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x - 2][y] == 0 && (x - 2) > 0) {
+                                            moveForvard = true;
+                                            checkUp(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                                    else if (way_map[x + 2][y] == 0 && (x + 2) < mazeColumns) {
+                                            moveForvard = true;
+                                            checkDown(prMaze, coordinates, x, y, current_coordinate, way_map);
+                                    }
+                            }
+                            else break;
+                    }
+            }
+            std::cout << std::endl;
 
 
 
     // Place character
         do{
-          int col=generateRandomNumber(1, mazeColumns-2);
-          int rows=generateRandomNumber(1, mazeRows-2);
+          int col=generateRandomNumber(1, mazeColumns-1);
+          int rows=generateRandomNumber(1, mazeRows-1);
           if((col%2==1) && (rows%2==1)){
-              if(prMaze[rows + 1][col] == wallSymbol && prMaze[rows - 1][col]== wallSymbol && prMaze[rows][col+1]== wallSymbol){
+              if((prMaze[rows + 1][col] == wallSymbol) && (prMaze[rows - 1][col]== wallSymbol) && (prMaze[rows][col+1]== wallSymbol)){
                 prMaze[rows][col] = exitSymbol;
             break;
           }
-          else if(prMaze[rows + 1][col] == wallSymbol && prMaze[rows - 1][col]== wallSymbol && prMaze[rows][col-1]== wallSymbol){
+          else if((prMaze[rows + 1][col] == wallSymbol) && (prMaze[rows - 1][col]== wallSymbol) && (prMaze[rows][col-1]== wallSymbol)){
               prMaze[rows][col] = exitSymbol;
             break;
         }
-        else if(prMaze[rows + 1][col] == wallSymbol && prMaze[col + 1][col]== wallSymbol && prMaze[rows][col-1]== wallSymbol){
+        else if((prMaze[rows + 1][col] == wallSymbol) && (prMaze[rows][col + 1]== wallSymbol) && (prMaze[rows][col-1]== wallSymbol)){
             prMaze[rows][col] = exitSymbol;
             break;
       }
-        else if(prMaze[rows - 1][col] == wallSymbol && prMaze[col + 1][col]== wallSymbol && prMaze[rows][col-1]== wallSymbol){
+        else if((prMaze[rows - 1][col] == wallSymbol) && (prMaze[rows][col + 1]== wallSymbol) && (prMaze[rows][col-1]== wallSymbol)){
              prMaze[rows][col] = exitSymbol;
              break;
           }
@@ -116,6 +238,7 @@ void generateMaze(std::array<std::array<char, mazeColumns>, mazeRows> &prMaze)
                 continue;
              }
         }
+          else continue;
 
      }
         while (true);
